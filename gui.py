@@ -14,7 +14,7 @@ class Application(tk.Frame):
 	def createWidgets(self):
 		#pass
 		self.mb = tk.Menubutton(self, text="File")
-		self.mb.grid()
+		self.mb.grid(sticky=tk.W)
 		
 		self.mb.menu = tk.Menu(self.mb, tearoff=0)
 		self.mb["menu"] = self.mb.menu
@@ -22,20 +22,24 @@ class Application(tk.Frame):
 		self.mb.menu.add_command(label="Open file...", command=self.open_file)
 		self.mb.menu.add_command(label="Save result...", command=self.save_result)
 		
-		self.tv = ttk.Treeview(self, columns=("name", "count", "date", "cur", "cur_date"))
+		self.tv = ttk.Treeview(self, columns=("name", "count", "date", "cur", "cur_date", "yrr"))
 		self.tv.grid(row = 1)
 
+		self.tv.column("#0", width=20)
 		self.tv.column("name", width=100)
 		self.tv.column("count", width=100)
 		self.tv.column("date", width=100)
 		self.tv.column("cur", width=100)
 		self.tv.column("cur_date", width=100)
+		self.tv.column("yrr", width=100)
 
 		self.tv.heading('name', text='Name')
 		self.tv.heading('count', text='Trad Count')
 		self.tv.heading('date', text='Trad Date')
 		self.tv.heading('cur', text='Cur Count')
 		self.tv.heading('cur_date', text='Cur Date')
+		self.tv.heading('yrr', text='Year Return Rate')
+
 		
 	def open_file(self):
 		filename = os.path.realpath(tkFileDialog.askopenfilename())
@@ -49,10 +53,10 @@ class Application(tk.Frame):
 	
 	def fill_treeview(self, tv, accs):
 		for acc in accs:
-			iid = tv.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate))
+			iid = tv.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate, acc.getYearRetRate()))
 			for r in acc.history:
-				tv.insert(iid, "end", values=("", r.count, r.date, "", ""))
-		
+				tv.insert(iid, "end", values=("", r.count, r.date, "", "", ""))
+			
 
 app = Application() 
 app.master.title('Calc Real Return') 
