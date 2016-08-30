@@ -52,6 +52,9 @@ class Application(tk.Frame):
 		csvop.writeFile(self.accs, filename)
 	
 	def fill_treeview(self, tv, accs):
+		for item in tv.get_children():
+			tv.delete(item)
+			
 		for acc in accs:
 			iid = tv.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate, acc.getYearRetRate()))
 			for r in acc.history:
