@@ -7,7 +7,7 @@ def readFile(filename):
 	f = open(filename, "rb")
 	rdr = csv.reader(f)
 	for row in rdr:
-		print row
+		#print row
 		name = row[0]
 		tradCount = row[1]
 		tradDate = row[2]
