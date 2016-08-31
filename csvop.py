@@ -2,7 +2,7 @@ import csv
 import record
 import datetime
 
-def readFile(filename):
+def readDataFile(filename):
 	accAll = []
 	f = open(filename, "rb")
 	rdr = csv.reader(f)
@@ -34,7 +34,7 @@ def readFile(filename):
 	f.close()
 	return accAll
 
-def writeFile(acclist, filename):
+def writeResultFile(acclist, filename):
 	row = []
 	f = open(filename, "wb")
 	wtr = csv.writer(f)
