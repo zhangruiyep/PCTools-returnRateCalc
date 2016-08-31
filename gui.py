@@ -13,7 +13,7 @@ class Application(tk.Frame):
 
 	def createWidgets(self):
 		#pass
-		menu_frame = tk.Frame(self)
+		menu_frame = ttk.Frame(self)
 		menu_frame.grid(sticky=tk.W)
 		
 		self.mb = tk.Menubutton(menu_frame, text="File")
@@ -51,6 +51,11 @@ class Application(tk.Frame):
 		self.tv.heading('cur', text='Cur Count')
 		self.tv.heading('cur_date', text='Cur Date')
 		self.tv.heading('yrr', text='Year Return Rate')
+		
+		self.sb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tv.yview)
+		self.sb.grid(row = 1, column=1, sticky=tk.NS)
+		
+		self.tv.configure(yscrollcommand=self.sb.set)
 
 		
 	def open_file(self):
