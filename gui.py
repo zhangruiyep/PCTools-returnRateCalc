@@ -60,7 +60,40 @@ class Application(tk.Frame):
 		
 		self.tv.configure(yscrollcommand=self.sb.set)
 
+		self.context_menu = tk.Menu(self.tv, tearoff=0)
+		self.context_menu.add_command(label="Edit", command=self.edit_handler)
+		self.tv.bind('<3>', self.show_context_menu)
+		self.entryPopup = ""
+ 
+	def show_context_menu(self, event):
+		self.context_menu.post(event.x_root,event.y_root)
+		self.event = event		
+ 
+	def edit_handler(self):
+		#print "in copy_handler"
+		#print self.event.x, self.event.y
+		# close previous popups
+		if self.entryPopup:
+			self.entryPopup.destroy()
+
+		self.edit_row = self.tv.identify_row(self.event.y)
+		self.edit_column = self.tv.identify_column(self.event.x)
+		#print self.tv.identify_element(self.event.x, self.event.y)
+		x,y,width,height = self.tv.bbox(self.edit_row, self.edit_column)
+
+		# place Entry popup properly         
+		self.entryPopup = tk.Entry(self.tv)
+		self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
 		
+		self.entryPopup.bind('<Return>', self.entryEnter)
+		self.entryPopup.focus_force()
+
+	def entryEnter(self, event):
+		entry_text = self.entryPopup.get()
+		#print entry_text
+		self.tv.set(self.edit_row, column=self.edit_column, value=entry_text)
+		self.entryPopup.destroy()
+			
 	def open_file(self):
 		filename = os.path.realpath(tkFileDialog.askopenfilename())
 		if os.path.isfile(filename):
