@@ -10,8 +10,10 @@ class Application(tk.Frame):
 		tk.Frame.__init__(self, master) 
 		self.grid() 
 		self.createWidgets()
+		self.accs = []
 
 	def createWidgets(self):
+
 		#pass
 		menu_frame = ttk.Frame(self)
 		menu_frame.grid(sticky=tk.W)
@@ -23,6 +25,7 @@ class Application(tk.Frame):
 		self.mb["menu"] = self.mb.menu
 		
 		self.mb.menu.add_command(label="Open file...", command=self.open_file)
+		self.mb.menu.add_command(label="Save file...", command=self.save_file)
 		self.mb.menu.add_command(label="Save result...", command=self.save_result)
 		
 		self.mb = tk.Menubutton(menu_frame, text="Data")
@@ -60,14 +63,24 @@ class Application(tk.Frame):
 		
 	def open_file(self):
 		filename = os.path.realpath(tkFileDialog.askopenfilename())
-		#print filename
-		self.accs = csvop.readDataFile(filename)
-		self.fill_treeview(self.tv, self.accs)
+		if os.path.isfile(filename):
+			self.accs = csvop.readDataFile(filename)
+			self.fill_treeview(self.tv, self.accs)
 		
 	def save_result(self):
 		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
 		csvop.writeResultFile(self.accs, filename)
-		
+
+	def save_file(self):
+		if self.accs == []:
+			tkMessageBox.showwarning("Warning", "No Data to save!")
+			return
+			
+		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
+		#print "get %s" % filename
+		csvop.writeDataFile(self.accs, filename)
+
+			
 	def calc_total(self):
 		total = 0.0
 		for acc in self.accs:

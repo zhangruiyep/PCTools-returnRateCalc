@@ -45,3 +45,29 @@ def writeResultFile(acclist, filename):
 		row = []
 	
 	f.close()
+	
+def writeDataFile(acclist, filename):
+	row = []
+	f = open(filename, "w+")
+	print "saving %s" % filename
+	wtr = csv.writer(f)
+	for a in acclist:
+		for r in a.history:
+			row.append(a.name)
+			row.append(r.count)
+			row.append(r.date)
+			row.append("")
+			row.append("")
+			wtr.writerow(row)
+			row = []
+		
+		row.append(a.name)
+		row.append("")
+		row.append("")
+		row.append(a.cur)
+		row.append(a.curDate)
+		wtr.writerow(row)
+		row = []
+	
+	f.close()
+	
