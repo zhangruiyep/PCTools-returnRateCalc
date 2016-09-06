@@ -23,49 +23,55 @@ class AddFrame(tk.Frame):
 		self.createWidgets()
 		
 	def createWidgets(self):
+		curRow = 0
 		label = ttk.Label(self, text="Account:", justify=tk.LEFT)
-		label.grid()
+		label.grid(row = curRow)
 
 		self.accEntry = ttk.Entry(self)
 		self.accEntry.delete(0, tk.END)
 		if self.mode == "record":
 			self.accEntry.insert(0, self.accName)
 			self.accEntry['state']=tk.DISABLED
-		self.accEntry.grid(row=0, column=1)		
+		self.accEntry.grid(row=curRow, column=1)		
 
+		curRow += 1
 		label = ttk.Label(self, text="Count:", justify=tk.LEFT)
-		label.grid(row=1)
+		label.grid(row=curRow)
 
 		self.cntEntry = ttk.Entry(self)
 		self.cntEntry.delete(0, tk.END)
-		self.cntEntry.grid(row=1, column=1)		
+		self.cntEntry.grid(row=curRow, column=1)		
 
+		curRow += 1
 		label = ttk.Label(self, text="Date:", justify=tk.LEFT)
-		label.grid(row=2)
+		label.grid(row=curRow)
 
 		self.dateEntry = ttk.Entry(self)
 		self.dateEntry.delete(0, tk.END)
-		self.dateEntry.grid(row=2, column=1)		
+		self.dateEntry.grid(row=curRow, column=1)		
 
 		if self.mode == "account":
+			curRow += 1
 			label = ttk.Label(self, text="Current Count:", justify=tk.LEFT)
-			label.grid(row=1)
+			label.grid(row=curRow)
 
 			self.curEntry = ttk.Entry(self)
 			self.curEntry.delete(0, tk.END)
-			self.curEntry.grid(row=1, column=1)		
+			self.curEntry.grid(row=curRow, column=1)		
 
+			curRow += 1
 			label = ttk.Label(self, text="Current Date:", justify=tk.LEFT)
-			label.grid(row=2)
+			label.grid(row=curRow)
 
 			self.curdateEntry = ttk.Entry(self)
 			self.curdateEntry.delete(0, tk.END)
-			self.curdateEntry.grid(row=2, column=1)		
+			self.curdateEntry.grid(row=curRow, column=1)		
 		
+		curRow += 1
 		OKBtn = ttk.Button(self, text="OK", command=self.addTradRecord)
-		OKBtn.grid(row=3)
+		OKBtn.grid(row=curRow)
 		CancelBtn = ttk.Button(self, text="Cancel", command=self.cancelAdd)
-		CancelBtn.grid(row=3, column=1)
+		CancelBtn.grid(row=curRow, column=1)
 
 	def addTradRecord(self):
 		cnt = self.cntEntry.get()
@@ -74,11 +80,12 @@ class AddFrame(tk.Frame):
 		#print cnt, date
 			self.tv.insert(self.parentIdx, "end", values=("", cnt, date, "", "", ""))
 
-		elif self.mode == "account":
+		if self.mode == "account":
 			self.accName = self.accEntry.get()
 			curCnt = self.curEntry.get()
 			curDate = self.curdateEntry.get()
-			self.tv.insert(self.parentIdx, "end", values=(self.accName, cnt, date, curCnt, curDate, ""))
+			iid = self.tv.insert(self.parentIdx, "end", values=(self.accName, "", "", curCnt, curDate, ""))
+			self.tv.insert(iid, "end", values=("", cnt, date, "", "", ""))
 		
 		self.tv.update_accs()
 		self.tv.update_yrr()
