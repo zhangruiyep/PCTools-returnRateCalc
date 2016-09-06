@@ -2,6 +2,11 @@ import csv
 import record
 import datetime
 
+def str2date(str):
+	d = str.split("-")
+	date = datetime.date(int(d[0]), int(d[1]), int(d[2]))
+	return date
+
 def readDataFile(filename):
 	accAll = []
 	f = open(filename, "rb")
@@ -21,14 +26,12 @@ def readDataFile(filename):
 
 		if tradCount != "":
 			#it is a trad record
-			d = tradDate.split("-")
-			date = datetime.date(int(d[0]), int(d[1]), int(d[2]))
+			date = str2date(tradDate)
 			r = record.tradRecord(float(tradCount), date)
 			a.trad(r)
 		if curCount != "":
 			#set cur
-			d = curDate.split("-")
-			date = datetime.date(int(d[0]), int(d[1]), int(d[2]))
+			date = str2date(curDate)
 			a.setCur(float(curCount), date)
 	
 	f.close()

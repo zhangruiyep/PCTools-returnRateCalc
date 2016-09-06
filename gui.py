@@ -4,116 +4,161 @@ import tkMessageBox
 import os
 import csvop
 import ttk
+import record
 
-class Application(tk.Frame):
-	def __init__(self, master=None):
-		tk.Frame.__init__(self, master) 
-		self.grid() 
+class AddFrame(tk.Frame):
+	def __init__(self, master=None, parentIdx=""):
+		tk.Frame.__init__(self, master)
+		self.grid()
+		if parentIdx != "":
+			self.accName = (master.item(parentIdx))['values'][0]
+			self.mode = "record"
+		else:
+			self.accName = ""
+			self.mode = "account"
+		self.tradCount = ""
+		self.tradDate = ""
+		self.tv = master
+		self.parentIdx = parentIdx
 		self.createWidgets()
-		self.accs = []
-
+		
 	def createWidgets(self):
+		label = ttk.Label(self, text="Account:", justify=tk.LEFT)
+		label.grid()
 
-		#pass
-		menu_frame = ttk.Frame(self)
-		menu_frame.grid(sticky=tk.W)
-		
-		self.mb = tk.Menubutton(menu_frame, text="File")
-		self.mb.grid()
-		
-		self.mb.menu = tk.Menu(self.mb, tearoff=0)
-		self.mb["menu"] = self.mb.menu
-		
-		self.mb.menu.add_command(label="Open file...", command=self.open_file)
-		self.mb.menu.add_command(label="Save file...", command=self.save_file)
-		self.mb.menu.add_command(label="Save result...", command=self.save_result)
-		
-		self.mb = tk.Menubutton(menu_frame, text="Data")
-		self.mb.grid(row=0, column=1)
+		self.accEntry = ttk.Entry(self)
+		self.accEntry.delete(0, tk.END)
+		if self.mode == "record":
+			self.accEntry.insert(0, self.accName)
+			self.accEntry['state']=tk.DISABLED
+		self.accEntry.grid(row=0, column=1)		
 
-		self.mb.menu = tk.Menu(self.mb, tearoff=0)
-		self.mb["menu"] = self.mb.menu
+		label = ttk.Label(self, text="Count:", justify=tk.LEFT)
+		label.grid(row=1)
+
+		self.cntEntry = ttk.Entry(self)
+		self.cntEntry.delete(0, tk.END)
+		self.cntEntry.grid(row=1, column=1)		
+
+		label = ttk.Label(self, text="Date:", justify=tk.LEFT)
+		label.grid(row=2)
+
+		self.dateEntry = ttk.Entry(self)
+		self.dateEntry.delete(0, tk.END)
+		self.dateEntry.grid(row=2, column=1)		
+
+		if self.mode == "account":
+			label = ttk.Label(self, text="Current Count:", justify=tk.LEFT)
+			label.grid(row=1)
+
+			self.curEntry = ttk.Entry(self)
+			self.curEntry.delete(0, tk.END)
+			self.curEntry.grid(row=1, column=1)		
+
+			label = ttk.Label(self, text="Current Date:", justify=tk.LEFT)
+			label.grid(row=2)
+
+			self.curdateEntry = ttk.Entry(self)
+			self.curdateEntry.delete(0, tk.END)
+			self.curdateEntry.grid(row=2, column=1)		
 		
-		self.mb.menu.add_command(label="Total", command=self.calc_total)
-		self.mb.menu.add_command(label="Average", command=self.calc_avr)
+		OKBtn = ttk.Button(self, text="OK", command=self.addTradRecord)
+		OKBtn.grid(row=3)
+		CancelBtn = ttk.Button(self, text="Cancel", command=self.cancelAdd)
+		CancelBtn.grid(row=3, column=1)
+
+	def addTradRecord(self):
+		cnt = self.cntEntry.get()
+		date = self.dateEntry.get()
+		if self.mode == "record":
+		#print cnt, date
+			self.tv.insert(self.parentIdx, "end", values=("", cnt, date, "", "", ""))
+
+		elif self.mode == "account":
+			self.accName = self.accEntry.get()
+			curCnt = self.curEntry.get()
+			curDate = self.curdateEntry.get()
+			self.tv.insert(self.parentIdx, "end", values=(self.accName, cnt, date, curCnt, curDate, ""))
 		
-		self.tv = ttk.Treeview(self, columns=("name", "count", "date", "cur", "cur_date", "yrr"))
-		self.tv.grid(row = 1)
+		self.tv.update_accs()
+		self.tv.update_yrr()
+		self.destroy()
 
-		self.tv.column("#0", width=20)
-		self.tv.column("name", width=100)
-		self.tv.column("count", width=100)
-		self.tv.column("date", width=100)
-		self.tv.column("cur", width=100)
-		self.tv.column("cur_date", width=100)
-		self.tv.column("yrr", width=100)
-
-		self.tv.heading('name', text='Name')
-		self.tv.heading('count', text='Trad Count')
-		self.tv.heading('date', text='Trad Date')
-		self.tv.heading('cur', text='Cur Count')
-		self.tv.heading('cur_date', text='Cur Date')
-		self.tv.heading('yrr', text='Year Return Rate')
+	def cancelAdd(self):
+		self.destroy()
 		
-		self.sb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tv.yview)
-		self.sb.grid(row = 1, column=1, sticky=tk.NS)
+class calcTreeview(ttk.Treeview):
+	def __init__(self, master=None):
+		ttk.Treeview.__init__(self, master)
+		self['columns']=("name", "count", "date", "cur", "cur_date", "yrr")
 		
-		self.tv.configure(yscrollcommand=self.sb.set)
+		self.grid()
+		self.createWidgets()
+	
+	def createWidgets(self):
+		self.column("#0", width=20)
+		self.column("name", width=100)
+		self.column("count", width=100)
+		self.column("date", width=100)
+		self.column("cur", width=100)
+		self.column("cur_date", width=100)
+		self.column("yrr", width=100)
 
-		self.context_menu = tk.Menu(self.tv, tearoff=0)
-		self.context_menu.add_command(label="Edit", command=self.edit_handler)
-		self.tv.bind('<3>', self.show_context_menu)
-		self.entryPopup = ""
- 
-	def show_context_menu(self, event):
-		self.context_menu.post(event.x_root,event.y_root)
-		self.event = event		
- 
-	def edit_handler(self):
-		#print "in copy_handler"
-		#print self.event.x, self.event.y
-		# close previous popups
-		if self.entryPopup:
-			self.entryPopup.destroy()
-
-		self.edit_row = self.tv.identify_row(self.event.y)
-		self.edit_column = self.tv.identify_column(self.event.x)
-		#print self.tv.identify_element(self.event.x, self.event.y)
-		x,y,width,height = self.tv.bbox(self.edit_row, self.edit_column)
-
-		# place Entry popup properly         
-		self.entryPopup = tk.Entry(self.tv)
-		self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
+		self.heading('name', text='Name')
+		self.heading('count', text='Trad Count')
+		self.heading('date', text='Trad Date')
+		self.heading('cur', text='Cur Count')
+		self.heading('cur_date', text='Cur Date')
+		self.heading('yrr', text='Year Return Rate')
 		
-		self.entryPopup.bind('<Return>', self.entryEnter)
-		self.entryPopup.focus_force()
-
-	def entryEnter(self, event):
-		entry_text = self.entryPopup.get()
-		#print entry_text
-		self.tv.set(self.edit_row, column=self.edit_column, value=entry_text)
-		self.entryPopup.destroy()
+	def fill_treeview(self, accs):
+		self.accs = accs
+		for item in self.get_children():
+			self.delete(item)
 			
-	def open_file(self):
-		filename = os.path.realpath(tkFileDialog.askopenfilename())
-		if os.path.isfile(filename):
-			self.accs = csvop.readDataFile(filename)
-			self.fill_treeview(self.tv, self.accs)
+		for acc in self.accs:
+			iid = self.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate, acc.getYearRetRate()))
+			for r in acc.history:
+				self.insert(iid, "end", values=("", r.count, r.date, "", "", ""))
+				
+	def update_accs(self):
+		self.accs = []
 		
-	def save_result(self):
-		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
-		csvop.writeResultFile(self.accs, filename)
+		for i in self.get_children():
+			item = self.item(i)
+			name = item['values'][0]
+			tradCount = item['values'][1]
+			tradDate = item['values'][2]
+			curCount = item['values'][3]
+			curDate = item['values'][4]
+			a = record.findInList(name, self.accs)
+			if a == "":
+				a = record.acc(name)
+				self.accs.append(a)
+			# Add history
+			for trdIdx in self.get_children(i):
+				trdItem = self.item(trdIdx)
+				tradCount = trdItem['values'][1]
+				tradDate = trdItem['values'][2]
 
-	def save_file(self):
-		if self.accs == []:
-			tkMessageBox.showwarning("Warning", "No Data to save!")
-			return
-			
-		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
-		#print "get %s" % filename
-		csvop.writeDataFile(self.accs, filename)
+				if tradCount != "":
+					#it is a trad record
+					date = csvop.str2date(tradDate)
+					r = record.tradRecord(float(tradCount), date)
+					a.trad(r)
+			# Add Cur
+			if curCount != "":
+				#set cur
+				date = csvop.str2date(curDate)
+				a.setCur(float(curCount), date)
 
-			
+	def update_yrr(self):
+		yrrcolumn = "yrr"
+		for acc in self.accs:
+			for accrow in self.get_children():
+				if self.item(accrow)['values'][0] == acc.name:
+					self.set(accrow, yrrcolumn, value=acc.getYearRetRate())
+
 	def calc_total(self):
 		total = 0.0
 		for acc in self.accs:
@@ -136,18 +181,135 @@ class Application(tk.Frame):
 		yrr = ((cur - base)/t)*365
 		
 		tkMessageBox.showinfo("Average YRR", "Your Average YRR is %f" % yrr)
+
+					
+class Application(tk.Frame):
+	def __init__(self, master=None):
+		tk.Frame.__init__(self, master) 
+		self.grid() 
+		self.createWidgets()
+		
+	def createWidgets(self):
+
+		#pass
+		menu_frame = ttk.Frame(self)
+		menu_frame.grid(sticky=tk.W)
+		
+		self.mb = tk.Menubutton(menu_frame, text="File")
+		self.mb.grid()
+		
+		self.mb.menu = tk.Menu(self.mb, tearoff=0)
+		self.mb["menu"] = self.mb.menu
+		
+		self.mb.menu.add_command(label="Open file...", command=self.open_file)
+		self.mb.menu.add_command(label="Save file...", command=self.save_file)
+		self.mb.menu.add_command(label="Save result...", command=self.save_result)
+		
+
+		self.tv = calcTreeview(self)
+		self.tv.grid(row = 1)
+				
+		self.sb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tv.yview)
+		self.sb.grid(row = 1, column=1, sticky=tk.NS)
+		
+		self.tv.configure(yscrollcommand=self.sb.set)
+
+		self.context_menu = tk.Menu(self.tv, tearoff=0)
+		self.context_menu.add_command(label="Edit", command=self.edit_handler)
+		self.context_menu.add_command(label="Add", command=self.add_handler)
+		self.tv.bind('<3>', self.show_context_menu)
+		self.entryPopup = ""
+		self.record_frame = ""
+
+		self.mb = tk.Menubutton(menu_frame, text="Data")
+		self.mb.grid(row=0, column=1)
+
+		self.mb.menu = tk.Menu(self.mb, tearoff=0)
+		self.mb["menu"] = self.mb.menu
+		
+		self.mb.menu.add_command(label="Total", command=self.tv.calc_total)
+		self.mb.menu.add_command(label="Average", command=self.tv.calc_avr)
+
+		
+	def show_context_menu(self, event):
+		self.context_menu.post(event.x_root,event.y_root)
+		self.event = event		
+ 
+	def edit_handler(self):
+		#print "in copy_handler"
+		#print self.event.x, self.event.y
+		# close previous popups
+		if self.entryPopup:
+			self.entryPopup.destroy()
+
+		self.edit_row = self.tv.identify_row(self.event.y)
+		self.edit_column = self.tv.identify_column(self.event.x)
+		#print self.tv.identify_element(self.event.x, self.event.y)
+		x,y,width,height = self.tv.bbox(self.edit_row, self.edit_column)
+
+		# place Entry popup properly         
+		self.entryPopup = tk.Entry(self.tv)
+		self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
+		
+		self.entryPopup.bind('<Return>', self.entryEnter)
+		self.entryPopup.focus_force()
+		
+	def add_handler(self):
+		if self.entryPopup:
+			self.entryPopup.destroy()
+
+		self.edit_row = self.tv.identify_row(self.event.y)
+		self.edit_column = self.tv.identify_column(self.event.x)
+		#print self.tv.identify_region(self.event.x, self.event.y)
+		x,y,width,height = self.tv.bbox(self.edit_row)
+		
+		parent = self.tv.parent(self.edit_row)
+		print parent
+		self.addDataFrame(parent)
+			
+			
+	def addDataFrame(self, parentItem):
+		#x,y,width,height = self.tv.bbox(parentItem)
+		
+		if self.record_frame:
+			self.record_frame.destroy()
+		
+		self.record_frame = AddFrame(self.tv, parentItem)
+		self.record_frame.place(x=0, y=20, anchor=tk.NW, width=200)			
+		
+
+	def entryEnter(self, event):
+		entry_text = self.entryPopup.get()
+		#print entry_text
+		self.tv.set(self.edit_row, column=self.edit_column, value=entry_text)
+		self.tv.update_accs()
+		self.tv.update_yrr()
+		self.entryPopup.destroy()
+			
+	def open_file(self):
+		filename = os.path.realpath(tkFileDialog.askopenfilename())
+		if os.path.isfile(filename):
+			accs = csvop.readDataFile(filename)
+			self.tv.fill_treeview(accs)
+		
+	def save_result(self):
+		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
+		csvop.writeResultFile(self.accs, filename)
+
+	def save_file(self):
+		
+		if self.tv.accs == []:
+			tkMessageBox.showwarning("Warning", "No Data to save!")
+			return
+			
+		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
+		#print "get %s" % filename
+		csvop.writeDataFile(self.tv.accs, filename)
+
+			
 		
 			
 	
-	def fill_treeview(self, tv, accs):
-		for item in tv.get_children():
-			tv.delete(item)
-			
-		for acc in accs:
-			iid = tv.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate, acc.getYearRetRate()))
-			for r in acc.history:
-				tv.insert(iid, "end", values=("", r.count, r.date, "", "", ""))
-			
 
 app = Application() 
 app.master.title('Calc Real Return') 
