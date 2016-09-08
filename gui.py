@@ -188,6 +188,18 @@ class calcTreeview(ttk.Treeview):
 		yrr = ((cur - base)/t)*365
 		
 		tkMessageBox.showinfo("Average YRR", "Your Average YRR is %f" % yrr)
+	
+	def history_merge(self):
+		for acc in self.accs:
+			for cur in acc.history:
+				for comp in acc.history:
+					if (comp != cur) and (comp.date == cur.date):
+						#print acc.name, comp.count, cur.count, cur.date
+						cur.count += comp.count
+						acc.history.remove(comp)
+						
+		self.fill_treeview(self.accs)
+						
 
 					
 class Application(tk.Frame):
@@ -236,6 +248,7 @@ class Application(tk.Frame):
 		
 		self.mb.menu.add_command(label="Total", command=self.tv.calc_total)
 		self.mb.menu.add_command(label="Average", command=self.tv.calc_avr)
+		self.mb.menu.add_command(label="History merge", command=self.tv.history_merge)
 
 		
 	def show_context_menu(self, event):
