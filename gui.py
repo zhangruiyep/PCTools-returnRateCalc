@@ -281,10 +281,10 @@ class Application(tk.Frame):
 		self.edit_row = self.tv.identify_row(self.event.y)
 		self.edit_column = self.tv.identify_column(self.event.x)
 		#print self.tv.identify_region(self.event.x, self.event.y)
-		x,y,width,height = self.tv.bbox(self.edit_row)
+		#x,y,width,height = self.tv.bbox(self.edit_row)
 		
 		parent = self.tv.parent(self.edit_row)
-		print parent
+		#print parent
 		self.addDataFrame(parent)
 			
 			
