@@ -3,13 +3,9 @@ A tool to help to calculate the real return rate
 ================================================
 Useage:
 -------
-1. Fill data in data.csv.
+1. run gui.py
 
-Format: Name, Trad Count, Trad Date, Current Count, Current Date
-
-2. run calc.py
-
-The result will write to result.csv.
+2. File -> Open file to open an exist data file. Or Right-click -> Add to start.
 
 Change History:
 ---------------
@@ -17,3 +13,7 @@ Change History:
 * 2016-8-26:
 
 	* The init version.
+
+* 2016-9-8:
+
+	* First usable GUI version. Include some common features, such as add, edit data.

@@ -2,10 +2,10 @@ import datetime
 import csvop
 import record
 
-all = csvop.readFile("data.csv")
+all = csvop.readDataFile("data.csv")
 for a in all:
 	#a.printHistory()
 	print a.name, a.getYearRetRate()
 
-csvop.writeFile(all, "result.csv")
+csvop.writeResultFile(all, "result.csv")
 
