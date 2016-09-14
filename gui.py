@@ -6,6 +6,37 @@ import csvop
 import ttk
 import record
 
+class datePicker(tk.Frame):
+	def __init__(self, master=None, parentIdx=""):
+		tk.Frame.__init__(self, master)
+		self.grid()
+		
+		self.createWidgets()
+
+	def createWidgets(self):
+		yearOptionList = range(2000, 2030)
+		self.yearVar = tk.StringVar()
+		self.yearVar.set(2016)
+		self.yearOpt = tk.OptionMenu(self, self.yearVar, *yearOptionList)
+		self.yearOpt.grid(row=0, column=0, sticky=tk.W)
+		
+		monthOptionList = range(1, 12)
+		self.monthVar = tk.StringVar()
+		self.monthVar.set(1)
+		self.monthOpt = tk.OptionMenu(self, self.monthVar, *monthOptionList)
+		self.monthOpt.grid(row=0, column=1, sticky=tk.W)
+
+		dayOptionList = range(1, 31)
+		self.dayVar = tk.StringVar()
+		self.dayVar.set(1)
+		self.dayOpt = tk.OptionMenu(self, self.dayVar, *dayOptionList)
+		self.dayOpt.grid(row=0, column=2, sticky=tk.W)
+
+		
+	def get(self):
+		date = "{0}-{1}-{2}".format(self.yearVar.get(), self.monthVar.get(), self.dayVar.get())
+		return date
+	
 class AddFrame(tk.Frame):
 	def __init__(self, master=None, parentIdx=""):
 		tk.Frame.__init__(self, master)
@@ -45,11 +76,11 @@ class AddFrame(tk.Frame):
 		curRow += 1
 		label = ttk.Label(self, text="Date:", justify=tk.LEFT)
 		label.grid(row=curRow)
-
+		
 		self.dateEntry = ttk.Entry(self)
 		self.dateEntry.delete(0, tk.END)
 		self.dateEntry.grid(row=curRow, column=1)		
-
+		
 		if self.mode == "account":
 			curRow += 1
 			label = ttk.Label(self, text="Current Count:", justify=tk.LEFT)
@@ -98,7 +129,7 @@ class calcTreeview(ttk.Treeview):
 	def __init__(self, master=None):
 		ttk.Treeview.__init__(self, master)
 		self['columns']=("name", "count", "date", "cur", "cur_date", "yrr")
-		
+		self.accs = []
 		self.grid()
 		self.createWidgets()
 	
@@ -267,10 +298,14 @@ class Application(tk.Frame):
 		#print self.tv.identify_element(self.event.x, self.event.y)
 		x,y,width,height = self.tv.bbox(self.edit_row, self.edit_column)
 
-		# place Entry popup properly         
-		self.entryPopup = tk.Entry(self.tv)
-		self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
-		
+		if self.edit_column == "#3" or self.edit_column == "#5":
+			self.entryPopup = datePicker(self.tv)
+			self.entryPopup.place( x=x, y=y, anchor=tk.NW)
+		else:
+			# place Entry popup properly         
+			self.entryPopup = tk.Entry(self.tv)
+			self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
+			
 		self.entryPopup.bind('<Return>', self.entryEnter)
 		self.entryPopup.focus_force()
 		
