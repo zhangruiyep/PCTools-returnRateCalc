@@ -76,9 +76,11 @@ class AddFrame(tk.Frame):
 		curRow += 1
 		label = ttk.Label(self, text="Date:", justify=tk.LEFT)
 		label.grid(row=curRow)
-		
+		'''
 		self.dateEntry = ttk.Entry(self)
 		self.dateEntry.delete(0, tk.END)
+		'''
+		self.dateEntry = datePicker(self)
 		self.dateEntry.grid(row=curRow, column=1)		
 		
 		if self.mode == "account":
@@ -93,9 +95,11 @@ class AddFrame(tk.Frame):
 			curRow += 1
 			label = ttk.Label(self, text="Current Date:", justify=tk.LEFT)
 			label.grid(row=curRow)
-
+			'''
 			self.curdateEntry = ttk.Entry(self)
 			self.curdateEntry.delete(0, tk.END)
+			'''
+			self.curdateEntry = datePicker(self)
 			self.curdateEntry.grid(row=curRow, column=1)		
 		
 		curRow += 1
@@ -330,7 +334,7 @@ class Application(tk.Frame):
 			self.record_frame.destroy()
 		
 		self.record_frame = AddFrame(self.tv, parentItem)
-		self.record_frame.place(x=0, y=20, anchor=tk.NW, width=200)			
+		self.record_frame.place(x=0, y=20, anchor=tk.NW)			
 		
 
 	def entryEnter(self, event):
