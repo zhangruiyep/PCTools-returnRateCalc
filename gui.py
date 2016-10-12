@@ -5,6 +5,7 @@ import os
 import csvop
 import ttk
 import record
+import datetime
 
 class datePicker(tk.Frame):
 	def __init__(self, master=None, parentIdx=""):
@@ -20,22 +21,33 @@ class datePicker(tk.Frame):
 		self.yearOpt = tk.OptionMenu(self, self.yearVar, *yearOptionList)
 		self.yearOpt.grid(row=0, column=0, sticky=tk.W)
 		
-		monthOptionList = range(1, 12)
+		monthOptionList = range(1, 13)
 		self.monthVar = tk.StringVar()
 		self.monthVar.set(1)
 		self.monthOpt = tk.OptionMenu(self, self.monthVar, *monthOptionList)
 		self.monthOpt.grid(row=0, column=1, sticky=tk.W)
 
-		dayOptionList = range(1, 31)
+		dayOptionList = range(1, 32)
 		self.dayVar = tk.StringVar()
 		self.dayVar.set(1)
 		self.dayOpt = tk.OptionMenu(self, self.dayVar, *dayOptionList)
 		self.dayOpt.grid(row=0, column=2, sticky=tk.W)
-
+		
+		self.todayBtn = ttk.Button(self, text="Today", command=self.getToday)
+		self.todayBtn.grid(row=0, column=3)
+		
 		
 	def get(self):
 		date = "{0}-{1}-{2}".format(self.yearVar.get(), self.monthVar.get(), self.dayVar.get())
 		return date
+		
+	def getToday(self):
+		today = datetime.date.today()
+		self.yearVar.set(today.year)
+		self.monthVar.set(today.month)
+		self.dayVar.set(today.day)
+		self.focus_force()
+	
 	
 class AddFrame(tk.Frame):
 	def __init__(self, master=None, parentIdx=""):
@@ -311,6 +323,7 @@ class Application(tk.Frame):
 			self.entryPopup.place( x=x, y=y, anchor=tk.NW, width=width)
 			
 		self.entryPopup.bind('<Return>', self.entryEnter)
+		self.entryPopup.bind('<Escape>', self.entryEntryDestroy)
 		self.entryPopup.focus_force()
 		
 	def add_handler(self):
@@ -343,6 +356,9 @@ class Application(tk.Frame):
 		self.tv.set(self.edit_row, column=self.edit_column, value=entry_text)
 		self.tv.update_accs()
 		self.tv.update_yrr()
+		self.entryPopup.destroy()
+	
+	def entryEntryDestroy(self, event):
 		self.entryPopup.destroy()
 			
 	def open_file(self):
