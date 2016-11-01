@@ -369,7 +369,7 @@ class Application(tk.Frame):
 		
 	def save_result(self):
 		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
-		csvop.writeResultFile(self.accs, filename)
+		csvop.writeResultFile(self.tv.accs, filename)
 
 	def save_file(self):
 		
