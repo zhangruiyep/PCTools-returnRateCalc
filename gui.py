@@ -17,7 +17,7 @@ class datePicker(tk.Frame):
 	def createWidgets(self):
 		yearOptionList = range(2000, 2030)
 		self.yearVar = tk.StringVar()
-		self.yearVar.set(2016)
+		self.yearVar.set(2017)
 		self.yearOpt = tk.OptionMenu(self, self.yearVar, *yearOptionList)
 		self.yearOpt.grid(row=0, column=0, sticky=tk.W)
 		
