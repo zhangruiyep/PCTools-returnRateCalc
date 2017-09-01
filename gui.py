@@ -146,11 +146,11 @@ class calcTreeview(ttk.Treeview):
 		ttk.Treeview.__init__(self, master)
 		self['columns']=("name", "count", "date", "cur", "cur_date", "yrr")
 		self.accs = []
-		self.grid()
+		self.grid(sticky=tk.NSEW)
 		self.createWidgets()
 	
 	def createWidgets(self):
-		self.column("#0", width=20)
+		self.column("#0", width=20, stretch=0)
 		self.column("name", width=100)
 		self.column("count", width=100)
 		self.column("date", width=100)
@@ -252,7 +252,9 @@ class calcTreeview(ttk.Treeview):
 class Application(tk.Frame):
 	def __init__(self, master=None):
 		tk.Frame.__init__(self, master) 
-		self.grid() 
+		self.columnconfigure(0, weight=1)
+		self.rowconfigure(1, weight=1)
+		self.grid(sticky=tk.NSEW) 
 		self.createWidgets()
 		
 	def createWidgets(self):
@@ -273,7 +275,7 @@ class Application(tk.Frame):
 		
 
 		self.tv = calcTreeview(self)
-		self.tv.grid(row = 1)
+		self.tv.grid(row = 1, sticky=tk.NSEW)
 				
 		self.sb = ttk.Scrollbar(self, orient=tk.VERTICAL, command=self.tv.yview)
 		self.sb.grid(row = 1, column=1, sticky=tk.NS)
@@ -388,4 +390,6 @@ class Application(tk.Frame):
 
 app = Application() 
 app.master.title('Calc Real Return') 
+app.master.rowconfigure(0, weight=1)
+app.master.columnconfigure(0, weight=1)
 app.mainloop() 
