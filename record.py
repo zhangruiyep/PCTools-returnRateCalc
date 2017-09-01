@@ -37,7 +37,7 @@ class acc:
 	
 	def printHistory(self):
 		for r in self.history:
-			print r.count, r.date
+			print( r.count, r.date)
 			
 	def getFirstTradDate(self):
 		d = datetime.date.today()

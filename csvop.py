@@ -9,7 +9,7 @@ def str2date(str):
 
 def readDataFile(filename):
 	accAll = []
-	f = open(filename, "rb")
+	f = open(filename, "r")
 	rdr = csv.reader(f)
 	for row in rdr:
 		#print row
@@ -39,7 +39,7 @@ def readDataFile(filename):
 
 def writeResultFile(acclist, filename):
 	row = []
-	f = open(filename, "wb")
+	f = open(filename, "w")
 	wtr = csv.writer(f)
 	for a in acclist:
 		row.append(a.name)
@@ -51,8 +51,8 @@ def writeResultFile(acclist, filename):
 	
 def writeDataFile(acclist, filename):
 	row = []
-	f = open(filename, "wb")
-	print "saving %s" % filename
+	f = open(filename, "w")
+	print( "saving %s" % filename)
 	wtr = csv.writer(f)
 	for a in acclist:
 		for r in a.history:

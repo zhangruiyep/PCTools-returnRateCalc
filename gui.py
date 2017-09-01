@@ -1,9 +1,9 @@
-import Tkinter as tk
-import tkFileDialog
-import tkMessageBox
+import tkinter as tk
+import tkinter.filedialog as tkFileDialog
+import tkinter.messagebox as tkMessageBox
 import os
 import csvop
-import ttk
+import tkinter.ttk as ttk
 import record
 import datetime
 
