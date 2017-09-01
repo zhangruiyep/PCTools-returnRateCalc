@@ -51,7 +51,7 @@ def writeResultFile(acclist, filename):
 	
 def writeDataFile(acclist, filename):
 	row = []
-	f = open(filename, "w+")
+	f = open(filename, "wb")
 	print "saving %s" % filename
 	wtr = csv.writer(f)
 	for a in acclist:

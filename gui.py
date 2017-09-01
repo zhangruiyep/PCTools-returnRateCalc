@@ -395,10 +395,12 @@ class Application(tk.Frame):
 		if self.tv.accs == []:
 			tkMessageBox.showwarning("Warning", "No Data to save!")
 			return
-			
-		filename = os.path.realpath(tkFileDialog.asksaveasfilename())
-		#print "get %s" % filename
-		csvop.writeDataFile(self.tv.accs, filename)
+
+		filename = tkFileDialog.asksaveasfilename()
+		if (filename != None) and (filename != ""):
+		    filename = os.path.realpath(filename)
+		    #print "get %s" % filename
+		    csvop.writeDataFile(self.tv.accs, filename)
 
 			
 		
