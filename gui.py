@@ -8,28 +8,37 @@ import record
 import datetime
 
 class datePicker(tk.Frame):
-	def __init__(self, master=None, parentIdx=""):
+	def __init__(self, master=None, parentIdx="", date=""):
 		tk.Frame.__init__(self, master)
 		self.grid()
-		
+		if date != "":
+		    splitDate = date.split("-")
+		    self.y = splitDate[0]
+		    self.m = splitDate[1]
+		    self.d = splitDate[2]
+		else:
+		    self.y = 2017
+		    self.m = 6
+		    self.d = 1
+
 		self.createWidgets()
 
 	def createWidgets(self):
 		yearOptionList = range(2000, 2030)
 		self.yearVar = tk.StringVar()
-		self.yearVar.set(2017)
+		self.yearVar.set(self.y)
 		self.yearOpt = tk.OptionMenu(self, self.yearVar, *yearOptionList)
 		self.yearOpt.grid(row=0, column=0, sticky=tk.W)
 		
 		monthOptionList = range(1, 13)
 		self.monthVar = tk.StringVar()
-		self.monthVar.set(1)
+		self.monthVar.set(self.m)
 		self.monthOpt = tk.OptionMenu(self, self.monthVar, *monthOptionList)
 		self.monthOpt.grid(row=0, column=1, sticky=tk.W)
 
 		dayOptionList = range(1, 32)
 		self.dayVar = tk.StringVar()
-		self.dayVar.set(1)
+		self.dayVar.set(self.d)
 		self.dayOpt = tk.OptionMenu(self, self.dayVar, *dayOptionList)
 		self.dayOpt.grid(row=0, column=2, sticky=tk.W)
 		
@@ -50,7 +59,7 @@ class datePicker(tk.Frame):
 	
 	
 class AddFrame(tk.Frame):
-	def __init__(self, master=None, parentIdx=""):
+	def __init__(self, master=None, parentIdx="", date=""):
 		tk.Frame.__init__(self, master)
 		self.grid()
 		if parentIdx != "":
@@ -60,7 +69,7 @@ class AddFrame(tk.Frame):
 			self.accName = ""
 			self.mode = "account"
 		self.tradCount = ""
-		self.tradDate = ""
+		self.tradDate = date
 		self.tv = master
 		self.parentIdx = parentIdx
 		self.createWidgets()
@@ -92,7 +101,9 @@ class AddFrame(tk.Frame):
 		self.dateEntry = ttk.Entry(self)
 		self.dateEntry.delete(0, tk.END)
 		'''
-		self.dateEntry = datePicker(self)
+
+		#print self.tradDate
+		self.dateEntry = datePicker(self, date=self.tradDate)
 		self.dateEntry.grid(row=curRow, column=1)		
 		
 		if self.mode == "account":
@@ -335,6 +346,7 @@ class Application(tk.Frame):
 		self.edit_row = self.tv.identify_row(self.event.y)
 		self.edit_column = self.tv.identify_column(self.event.x)
 		#print self.tv.identify_region(self.event.x, self.event.y)
+		#print self.edit_row
 		#x,y,width,height = self.tv.bbox(self.edit_row)
 		
 		parent = self.tv.parent(self.edit_row)
@@ -347,8 +359,13 @@ class Application(tk.Frame):
 		
 		if self.record_frame:
 			self.record_frame.destroy()
-		
-		self.record_frame = AddFrame(self.tv, parentItem)
+
+		#print self.tv.item(self.edit_row)['values']
+		if (self.edit_row != "") and (self.edit_row != None):
+		    date = self.tv.item(self.edit_row)['values'][2]
+		else:
+		    date = ""
+		self.record_frame = AddFrame(self.tv, parentItem, date)
 		self.record_frame.place(x=0, y=20, anchor=tk.NW)			
 		
 

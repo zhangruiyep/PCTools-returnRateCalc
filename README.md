@@ -17,3 +17,10 @@ Change History:
 * 2016-9-8:
 
 	* First usable GUI version. Include some common features, such as add, edit data.
+	
+* 2017-9-1
+
+	* Make Treeview auto resize.
+	
+	* Get current trad date as default.
+	
