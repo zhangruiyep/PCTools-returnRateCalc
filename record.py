@@ -1,9 +1,10 @@
 import datetime
 
 class tradRecord:
-	def __init__(self, count, date=datetime.date.today()):
+	def __init__(self, count, date=datetime.date.today(), remain=None):
 		self.count = count
 		self.date = date
+		self.remain = remain
 
 class acc:
 	def __init__(self, name):

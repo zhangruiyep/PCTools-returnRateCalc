@@ -27,9 +27,12 @@ def readDataFile(filename):
 		if tradCount != "":
 			#it is a trad record
 			date = str2date(tradDate)
-			r = record.tradRecord(float(tradCount), date)
+			if curCount != "":
+				r = record.tradRecord(float(tradCount), date, float(curCount))
+			else:
+				r = record.tradRecord(float(tradCount), date)
 			a.trad(r)
-		if curCount != "":
+		if curCount != "" and curDate != "":
 			#set cur
 			date = str2date(curDate)
 			a.setCur(float(curCount), date)

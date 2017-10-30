@@ -73,7 +73,15 @@ class AddFrame(tk.Frame):
 			self.curdateEntry.delete(0, tk.END)
 			'''
 			self.curdateEntry = datePicker(self)
-			self.curdateEntry.grid(row=curRow, column=1)		
+			self.curdateEntry.grid(row=curRow, column=1)	
+		elif self.mode == "record":
+			curRow += 1
+			label = ttk.Label(self, text="Remain:", justify=tk.LEFT)
+			label.grid(row=curRow)
+
+			self.curEntry = ttk.Entry(self)
+			self.curEntry.delete(0, tk.END)
+			self.curEntry.grid(row=curRow, column=1)					
 		
 		curRow += 1
 		OKBtn = ttk.Button(self, text="OK", command=self.addTradRecord)
@@ -84,9 +92,10 @@ class AddFrame(tk.Frame):
 	def addTradRecord(self):
 		cnt = self.cntEntry.get()
 		date = self.dateEntry.get()
+		remain = self.curEntry.get()
 		if self.mode == "record":
 		#print cnt, date
-			self.tv.insert(self.parentIdx, "end", values=("", cnt, date, "", "", ""))
+			self.tv.insert(self.parentIdx, "end", values=("", cnt, date, remain, "", ""))
 
 		if self.mode == "account":
 			self.accName = self.accEntry.get()
@@ -134,7 +143,9 @@ class calcTreeview(ttk.Treeview):
 		for acc in self.accs:
 			iid = self.insert('',"end",values=(acc.name, "", "", acc.cur, acc.curDate, acc.getYearRetRate()))
 			for r in acc.history:
-				self.insert(iid, "end", values=("", r.count, r.date, "", "", ""))
+				if r.remain == None:
+					r.remain = ""
+				self.insert(iid, "end", values=("", r.count, r.date, r.remain, "", ""))
 				
 	def update_accs(self):
 		self.accs = []
